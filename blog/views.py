@@ -20,6 +20,7 @@ bible_dict = json.load(f)
 CONNECTION_STRING = "mongodb+srv://admincoinuser:r0mnnPMDNPou93Ya@cluster0.6ne7k.mongodb.net/test"
 client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
 
+
 def index(request):
     if request.method == "GET":
         return render(request, 'blog/holy_bible.html')
@@ -56,9 +57,9 @@ def crypto_index(request):
         res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
         res = list(res)
         cache.set('crypto', res, 900)
-        return HttpResponse(res, content_type="application/json")
+        return HttpResponse(json.dumps(res), content_type="application/json")
     else:
-        return HttpResponse(last_update_crypto, content_type="application/json")
+        return HttpResponse(json.dumps(last_update_crypto), content_type="application/json")
 
 
 def crypto_get_single(request):
@@ -71,12 +72,12 @@ def crypto_get_single(request):
         res = list(res)
         cache.set('crypto', res, 900)
         if coin_name is None or coin_name not in res[0]['data'].keys():
-            return HttpResponse("invalid coin name", content_type="application/json")
-        return HttpResponse(list(res[0]['data'][coin_name].items()), content_type="application/json")
+            return HttpResponse(json.dumps("invalid coin name"), content_type="application/json")
+        return HttpResponse(json.dumps(list(res[0]['data'][coin_name].items())), content_type="application/json")
     else:
         if coin_name is None or coin_name not in last_update_crypto[0]['data'].keys():
-            return HttpResponse("invalid coin name", content_type="application/json")
-        return HttpResponse(list(last_update_crypto[0]['data'][coin_name].items()), content_type="application/json")
+            return HttpResponse(json.dumps("invalid coin name"), content_type="application/json")
+        return HttpResponse(json.dumps(list(last_update_crypto[0]['data'][coin_name].items())), content_type="application/json")
 
 
 def currency(request):
@@ -87,9 +88,9 @@ def currency(request):
         res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
         res = list(res)
         cache.set('currency', res, 900)
-        return HttpResponse(res, content_type="application/json")
+        return HttpResponse(json.dumps(res), content_type="application/json")
     else:
-        return HttpResponse(last_update_currency, content_type="application/json")
+        return HttpResponse(json.dumps(last_update_currency), content_type="application/json")
 
 
 def stocks(request):
@@ -102,9 +103,9 @@ def stocks(request):
             res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
             res = list(res)
             cache.set(category, res, 900)
-            return HttpResponse(res, content_type="application/json")
+            return HttpResponse(json.dumps(res), content_type="application/json")
         else:
-            return HttpResponse(last_update_stock, content_type="application/json")
+            return HttpResponse(json.dumps(last_update_stock), content_type="application/json")
     else:
-        return HttpResponse("Invalid category", content_type="application/json")
+        return HttpResponse(json.dumps("Invalid category"), content_type="application/json")
 
