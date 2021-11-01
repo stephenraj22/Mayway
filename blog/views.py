@@ -88,9 +88,9 @@ def currency(request):
         res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
         res = list(res)
         cache.set('currency', res, 900)
-        return HttpResponse(json.dumps(res), content_type="application/json")
+        return HttpResponse(json.dumps(res[0]), content_type="application/json")
     else:
-        return HttpResponse(json.dumps(last_update_currency), content_type="application/json")
+        return HttpResponse(json.dumps(last_update_currency[0]), content_type="application/json")
 
 
 def stocks(request):
@@ -103,9 +103,9 @@ def stocks(request):
             res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
             res = list(res)
             cache.set(category, res, 900)
-            return HttpResponse(json.dumps(res), content_type="application/json")
+            return HttpResponse(json.dumps(res[0]), content_type="application/json")
         else:
-            return HttpResponse(json.dumps(last_update_stock), content_type="application/json")
+            return HttpResponse(json.dumps(last_update_stock[0]), content_type="application/json")
     else:
         return HttpResponse(json.dumps("Invalid category"), content_type="application/json")
 
