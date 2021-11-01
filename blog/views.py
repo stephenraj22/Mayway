@@ -107,7 +107,7 @@ def currency(request):
 
 
 def get_all_currency_name(request):
-    last_update_currency = cache.get('crypto')
+    last_update_currency = cache.get('currency')
     if last_update_currency is None:
         dbname = client['currency_exchange']
         collection_name = dbname['currency_data']
