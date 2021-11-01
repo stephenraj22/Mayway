@@ -62,6 +62,19 @@ def crypto_index(request):
         return HttpResponse(json.dumps(last_update_crypto[0]), content_type="application/json")
 
 
+def get_all_crypto_name(request):
+    last_update_crypto = cache.get('crypto')
+    if last_update_crypto is None:
+        dbname = client['crypto']
+        collection_name = dbname['crypto_data']
+        res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
+        res = list(res)
+        cache.set('crypto', res, 900)
+        return HttpResponse(json.dumps(list(res[0]['data'].keys())), content_type="application/json")
+    else:
+        return HttpResponse(json.dumps(list(last_update_crypto[0]['data'].keys())), content_type="application/json")
+
+
 def crypto_get_single(request):
     last_update_crypto = cache.get('crypto')
     coin_name = request.GET.get('coin_name')
@@ -91,6 +104,37 @@ def currency(request):
         return HttpResponse(json.dumps(res[0]), content_type="application/json")
     else:
         return HttpResponse(json.dumps(last_update_currency[0]), content_type="application/json")
+
+
+def get_all_currency_name(request):
+    last_update_currency = cache.get('crypto')
+    if last_update_currency is None:
+        dbname = client['currency_exchange']
+        collection_name = dbname['currency_data']
+        res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
+        res = list(res)
+        cache.set('currency', res, 900)
+        return HttpResponse(json.dumps(list(res[0]['data'].keys())), content_type="application/json")
+    else:
+        return HttpResponse(json.dumps(list(last_update_currency[0]['data'].keys())), content_type="application/json")
+
+
+def currency_get_single(request):
+    last_update_currency = cache.get('currency')
+    currency_exchange = request.GET.get('exchange')
+    if last_update_currency is None:
+        dbname = client['currency_exchange']
+        collection_name = dbname['currency_data']
+        res = collection_name.find({}, {"_id": 0, "ts": 0}).sort('ts', pymongo.DESCENDING).limit(1)
+        res = list(res)
+        cache.set('currency', res, 900)
+        if currency_exchange is None or currency_exchange not in res[0]['data'].keys():
+            return HttpResponse(json.dumps("invalid exchange name"), content_type="application/json")
+        return HttpResponse(json.dumps(res[0]['data'][currency_exchange]), content_type="application/json")
+    else:
+        if currency_exchange is None or currency_exchange not in last_update_currency[0]['data'].keys():
+            return HttpResponse(json.dumps("invalid exchange name"), content_type="application/json")
+        return HttpResponse(json.dumps(last_update_currency[0]['data'][currency_exchange]), content_type="application/json")
 
 
 def stocks(request):
